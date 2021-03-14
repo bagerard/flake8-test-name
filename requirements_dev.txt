@@ -1,0 +1,6 @@
+-e .
+pytest
+astpretty
+mock
+pytest-cov
+pre-commit
