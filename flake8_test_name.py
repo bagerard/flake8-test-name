@@ -8,24 +8,9 @@ import re
 __version__ = "0.1.0"
 CODE_PREFIX = "TN"
 
-
+# constants
 TEST_FUNC_PREFIX = "test_"
 TEST_FUNC_NAME_VALIDATOR_METHOD = "test_function_name_validator"
-
-
-TEST_FUNC_NAME_VALIDATOR_MODULE = os.environ.get("TEST_FUNC_NAME_VALIDATOR_MODULE")
-
-
-def get_test_func_name_validator():
-    def _validator(s):
-        raise Exception("NO VALIDATOR")
-
-    if TEST_FUNC_NAME_VALIDATOR_MODULE:
-        validator = _get_validator_from_module(TEST_FUNC_NAME_VALIDATOR_MODULE)
-    else:
-        validator = _validator
-
-    return validator
 
 
 def _get_validator_from_module(file_path: str):
@@ -76,7 +61,7 @@ class Flake8Argparse(object):
             type="str",
             default=None,
             parse_from_config=True,
-            help=f"Path to a python file containing a validator function ´{TEST_FUNC_NAME_VALIDATOR_MODULE}´",
+            help=f"Path to a python file containing a validator function ´{TEST_FUNC_NAME_VALIDATOR_METHOD}´",
         )
         option_manager.add_option(
             "--test-func-name-validator-regex",
@@ -98,26 +83,17 @@ class Flake8Argparse(object):
 
 
 class MyVisitor(ast.NodeVisitor):
-    def __init__(self, validator):
-        self.validator = validator
-        self.stats = []
-
-    @staticmethod
-    def is_test_function(func_name):
-        return func_name.startswith(TEST_FUNC_PREFIX)
+    def __init__(self):
+        self.function_defs = []
 
     def visit_FunctionDef(self, node):
-        if not self.is_test_function(node.name):
-            return
-
-        if not self.validator(node.name):
-            self.stats.append((node, node.name))
+        self.function_defs.append((node, node.name))
 
 
 class MyFlake8Plugin(Flake8Argparse):
 
     version = __version__
-    name = "illegal-import"
+    name = "test-name"
 
     ERRORS = {
         101: "bad test function name ({func_name})",
@@ -129,12 +105,17 @@ class MyFlake8Plugin(Flake8Argparse):
         return node.lineno, node.col_offset, msg, type(self)
 
     @staticmethod
+    def is_test_function(func_name):
+        return func_name.startswith(TEST_FUNC_PREFIX)
+
+    @staticmethod
     def get_invalid_test_methods(tree, validator):
-        visitor = MyVisitor(validator)
+        visitor = MyVisitor()
         visitor.visit(tree)
 
-        for node, func_name in visitor.stats:
-            yield node, func_name
+        for node, func_name in visitor.function_defs:
+            if MyFlake8Plugin.is_test_function(func_name) and not validator(func_name):
+                yield node, func_name
 
     def report(self, msg):
         print(msg)
@@ -157,7 +138,7 @@ class MyFlake8Plugin(Flake8Argparse):
 
         test_func_name_validator = self.get_test_func_name_validator()
 
-        for node, func_name in MyFlake8Plugin.get_invalid_test_methods(
+        for node, func_name in self.get_invalid_test_methods(
             self.tree, validator=test_func_name_validator
         ):
             yield self._generate_error(node, 101, func_name=func_name)
