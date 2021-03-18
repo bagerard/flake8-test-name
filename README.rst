@@ -34,7 +34,7 @@ E.g usage::
 
   $ flake8 myproject/tests/sample.py --test-func-name-validator-regex="test_funky_convention_.*" --select=II101
 
->>/home/.../tests/sample.py:14:1: TN101 test function name does not match the convention (test_invalid_method_sample)
+  >>/home/.../tests/sample.py:14:1: TN101 test function name does not match the convention (test_invalid_method_sample)
 
 
 Error codes
@@ -42,11 +42,11 @@ Error codes
 
 This plugin is using the following error codes:
 
-+---------------------------------------------------------------------------------------------+
-| Presence of forbidden imports                                                               |
-+-------+-------------------------------------------------------------------------------------+
-| TN101 | TN101 test function name does not match the convention (test_invalid_method_sample) |
-+-------+-------------------------------------------------------------------------------------+
++----------------------------------------------------------------+
+| Test function name validation                                  |
++-------+--------------------------------------------------------+
+| TN101 | TN101 test function name does not match the convention |
++-------+--------------------------------------------------------+
 
 
 Operation
