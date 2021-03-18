@@ -5,7 +5,7 @@ import importlib.util
 import re
 
 # metadata
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 CODE_PREFIX = "TN"
 
 # constants

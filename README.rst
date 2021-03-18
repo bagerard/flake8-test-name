@@ -53,7 +53,7 @@ Operation
 ---------
 
 The plugin will go through all files, identify the tests directories, and validate method
-starting with "test_" against your validator.
+starting with `test_` against your validator.
 
 
 Changes

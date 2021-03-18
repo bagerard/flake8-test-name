@@ -32,6 +32,7 @@ setup(
     version=get_version(),
     description="Invalid test name checker, plugin for flake8",
     long_description=get_long_description(),
+    long_description_content_type="text/x-rst",
     keywords="flake8 test name convention",
     maintainer="Bastien Gerard",
     maintainer_email="bast.gerard@gmail.com",
