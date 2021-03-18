@@ -1,11 +1,13 @@
 Test Name function validator (Flake8 plugin)
 ============================================
 
-[![flake8-test-name-CI](https://github.com/bagerard/flake8-test-name/actions/workflows/github-actions.yml/badge.svg)](https://github.com/bagerard/flake8-test-name/actions/workflows/github-actions.yml)
+.. image:: https://github.com/bagerard/flake8-test-name/actions/workflows/github-actions.yml/badge.svg
+   :alt: Build status
+   :target: https://github.com/bagerard/flake8-test-name/actions/workflows/github-actions.yml
 
-.. image:: http://codecov.io/github/bagerard/flake8-test-name/coverage.svg?branch=master
+.. image:: https://coveralls.io/repos/github/bagerard/flake8-test-name/badge.svg
    :alt: Coverage Status
-   :target: http://codecov.io/github/bagerard/flake8-test-name?branch=master
+   :target: https://coveralls.io/github/bagerard/flake8-test-name
 
 An extension for `Flake8 <https://pypi.python.org/pypi/flake8>`_ to make sure
 that test function name follows a given convention
