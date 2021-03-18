@@ -27,15 +27,32 @@ Parameters
 ----------
 
 This module can be configured in 2 ways:
---test-func-name-validator-module={path}
+--test-func-name-validator-module={path_to_a_python_file}
+or
 --test-func-name-validator-regex={regex_pattern}
 
-E.g usage::
+E.g usage with the regex::
 
   $ flake8 myproject/tests/sample.py --test-func-name-validator-regex="test_funky_convention_.*" --select=II101
 
-  >>/home/.../tests/sample.py:14:1: TN101 test function name does not match the convention (test_invalid_method_sample)
+  >>myproject/tests/sample.py:14:1: TN101 test function name does not match the convention (test_invalid_method_sample)
 
+
+
+E.g usage with the module::
+Since regex aren't a good fit for all the use case, you can also provide your own validator
+as a python file with a function named "test_function_name_validator".
+
+Assuming you have a funky_validator.py file with the following content::
+
+    def test_function_name_validator(func_name: str):
+        return func_name.startswith("test_funkyconvention")
+
+You can then configure the plugin with::
+
+    $ flake8 myproject/tests/sample.py --test-func-name-validator-module=./funky_validator.py --select=II101
+
+    >>myproject/tests/sample.py:14:1: TN101 test function name does not match the convention (test_invalid_method_sample)
 
 Error codes
 -----------
@@ -52,13 +69,13 @@ This plugin is using the following error codes:
 Operation
 ---------
 
-The plugin will go through all files, identify the tests directories, and validate method
+The plugin will go through all files, look for directories "tests", and validate method
 starting with `test_` against your validator.
 
 
 Changes
 -------
 
-0.1.0 - 2021-03-xx
+0.1.1 - 2021-03-19
 ``````````````````
 * Initial release
