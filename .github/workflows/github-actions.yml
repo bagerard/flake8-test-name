@@ -46,9 +46,9 @@ jobs:
       run: pip install .
     - name: Run test suite
       run: pytest
-#    - name: Send coverage to Coveralls
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        COVERALLS_SERVICE_NAME: github
-#      if: ${{ matrix.python-version == 3.7 }}
-#      run: coveralls
+    - name: Send coverage to Coveralls
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_SERVICE_NAME: github
+      if: ${{ matrix.python-version == 3.7 }}
+      run: coveralls

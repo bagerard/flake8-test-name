@@ -1,9 +1,7 @@
 Test Name function validator (Flake8 plugin)
 ============================================
 
-![example workflow](https://github.com/bagerard/flake8-test-name/actions/workflows/github-actions/badge.svg)
-
-
+[![flake8-test-name-CI](https://github.com/bagerard/flake8-test-name/actions/workflows/github-actions.yml/badge.svg)](https://github.com/bagerard/flake8-test-name/actions/workflows/github-actions.yml)
 
 .. image:: http://codecov.io/github/bagerard/flake8-test-name/coverage.svg?branch=master
    :alt: Coverage Status
