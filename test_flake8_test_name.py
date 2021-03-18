@@ -3,7 +3,6 @@ import os
 from collections import namedtuple
 
 import flake8
-import mock
 import pytest
 from flake8.options.manager import OptionManager
 from flake8_test_name import (
@@ -14,10 +13,13 @@ from flake8_test_name import (
     MyVisitor,
     _get_validator_from_module,
     _get_validator_from_regex,
+    CustomTestFunctionLoaderError,
+    TestNamePluginConfigurationError,
 )
 
 curr_dir_path = os.path.dirname(os.path.realpath(__file__))
 SAMPLE_FILE_PATH = curr_dir_path + "/tests/files/test_sample.py"
+SAMPLE_PDF_PATH = curr_dir_path + "/tests/files/dummy.pdf"
 SAMPLE_VALIDATOR_MODULE_PATH = curr_dir_path + "/tests/files/sample_validator.py"
 SAMPLE_FILE_DIR = os.path.dirname(SAMPLE_FILE_PATH)
 
@@ -36,9 +38,24 @@ def get_tree_from_str(pycode, filename="test.py"):
 
 
 class TestModuleUtils:
-    def test__get_validator_from_module(self):
+    def test__get_validator_from_module__valid_module__return_function(self):
         validator = _get_validator_from_module(SAMPLE_VALIDATOR_MODULE_PATH)
         assert validator("test_funkyconvention_garbage") is True
+
+    def test__get_validator_from_module__no_function__raises(self, tmp_path):
+        file_path = tmp_path / "tmp.py"
+        with open(file_path, "w") as f:
+            f.write("#import garbage\n\ndef foo():\n    pass\n\ndef bar():\n    pass")
+
+        with pytest.raises(
+            CustomTestFunctionLoaderError,
+            match="Could not find function ´test_function_name_validator´",
+        ):
+            _get_validator_from_module(file_path)
+
+    def test__get_validator_from_module__pdf_file__raises(self, tmp_path):
+        with pytest.raises(CustomTestFunctionLoaderError, match="Could not load"):
+            _get_validator_from_module(SAMPLE_PDF_PATH)
 
     def test__get_validator_from_regex(self):
         validator = _get_validator_from_regex("test_garbage.*")
@@ -95,7 +112,7 @@ class TestFlake8Optparse:
         flake8_opt_mgr = OptionManager(prog="flake8", version=flake8.__version__)
         plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
         args = SysArgs(
-            test_func_name_validator_module=SAMPLE_FILE_DIR,
+            test_func_name_validator_module=SAMPLE_VALIDATOR_MODULE_PATH,
             test_func_name_validator_regex="test_.*",
         )
         plugin.parse_options(flake8_opt_mgr, args, extra_args=None)
@@ -197,28 +214,99 @@ class TestMyFlake8Plugin:
         res = list(checker.run())
         assert res == expected
 
-    # @mock.patch("flake8_illegal_import.MyFlake8Plugin.report")
-    # def test__run__no_package_name(self, reporter):
-    #     tree = get_tree(SAMPLE_FILE_PATH)
-    #     args = SysArgs(illegal_import_dir="/tmp")
-    #
-    #     checker = ImportChecker(tree, SAMPLE_FILE_PATH)
-    #     checker.parse_options(None, args, None)
-    #     resp = list(checker.run())
-    #     assert len(resp) == 0
-    #     reporter.assert_called_once_with("No illegal import package set - skip checks")
-    #
-    # @mock.patch("flake8_illegal_import.MyFlake8Plugin.report")
-    # def test__run__dir_not_exist(self, reporter):
-    #     tree = get_tree(SAMPLE_FILE_PATH)
-    #     args = SysArgs(illegal_import_dir="./non-exist")
-    #
-    #     checker = ImportChecker(tree, SAMPLE_FILE_PATH)
-    #     checker.parse_options(None, args, None)
-    #     resp = list(checker.run())
-    #     assert len(resp) == 0
-    #     reporter.assert_called_once()
-    #     assert (
-    #         "WARNING: Directory configured does not exist:"
-    #         in reporter.call_args_list[0][0][0]
-    #     )
+    def test_run__using_regex__no_invalid_test(self):
+        code_snippet = "import garbage\n\ndef foo():\n    pass\n\ndef bar():\n    pass"
+        tree = get_tree_from_str(code_snippet)
+        args = SysArgs(
+            test_func_name_validator_regex="test_funkyconvention.*",
+            test_func_name_validator_module=None,
+        )
+
+        checker = MyFlake8Plugin(tree, SAMPLE_FILE_PATH)
+        checker.parse_options(None, args, None)
+
+        expected = []
+        res = list(checker.run())
+        assert res == expected
+
+    def test_run__using_module__match(self):
+        tree = get_tree(SAMPLE_FILE_PATH)
+        args = SysArgs(
+            test_func_name_validator_module=SAMPLE_VALIDATOR_MODULE_PATH,
+            test_func_name_validator_regex=None,
+        )
+        checker = MyFlake8Plugin(tree, SAMPLE_FILE_PATH)
+        checker.parse_options(None, args, None)
+
+        expected = [
+            (
+                10,
+                0,
+                "TN101 bad test function name (test_invalid_module_sample)",
+                MyFlake8Plugin,
+            ),
+            (
+                22,
+                4,
+                "TN101 bad test function name (test_invalid_method_sample)",
+                MyFlake8Plugin,
+            ),
+            (
+                25,
+                4,
+                "TN101 bad test function name (test_test_funkyconvention_method_is_valid)",
+                MyFlake8Plugin,
+            ),
+            (
+                33,
+                4,
+                "TN101 bad test function name (test_invalid_unittest_method_sample)",
+                MyFlake8Plugin,
+            ),
+        ]
+        res = list(checker.run())
+        assert res == expected
+
+    def test_run__file_not_in_test_dir__simply_skipped(self):
+        code_snippet = "def test_not_good():\n    pass"
+        tree = get_tree_from_str(code_snippet)
+        args = SysArgs(
+            test_func_name_validator_module=None,
+            test_func_name_validator_regex="test_funkyconvention",
+        )
+        # Verify that it would be identified
+        # as an invalid test if in tests dir first
+        checker = MyFlake8Plugin(tree, "/tmp/tests/test.py")
+        checker.parse_options(None, args, None)
+
+        expected = [
+            (1, 0, "TN101 bad test function name (test_not_good)", MyFlake8Plugin)
+        ]
+
+        res = list(checker.run())
+        assert res == expected
+
+        checker = MyFlake8Plugin(tree, "/tmp/regular_dir/test.py")
+        checker.parse_options(None, args, None)
+
+        res = list(checker.run())
+        assert not res
+
+    def test_run__no_validator__raises(self):
+        tree = get_tree(SAMPLE_FILE_PATH)
+        checker = MyFlake8Plugin(tree, SAMPLE_FILE_PATH)
+        checker.parse_options(None, SysArgs(None, None), None)
+        with pytest.raises(TestNamePluginConfigurationError):
+            checker.get_test_func_name_validator()
+
+    def test_get_test_func_name_validator__no_validator__raises(self):
+        tree = get_tree(SAMPLE_FILE_PATH)
+        checker = MyFlake8Plugin(tree, SAMPLE_FILE_PATH)
+        checker.parse_options(None, SysArgs(None, None), None)
+        with pytest.raises(TestNamePluginConfigurationError):
+            checker.get_test_func_name_validator()
+
+    def test_report__should_pass(self):
+        tree = get_tree(SAMPLE_FILE_PATH)
+        checker = MyFlake8Plugin(tree, SAMPLE_FILE_PATH)
+        assert checker.report("funky_message") is None

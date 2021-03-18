@@ -13,22 +13,32 @@ TEST_FUNC_PREFIX = "test_"
 TEST_FUNC_NAME_VALIDATOR_METHOD = "test_function_name_validator"
 
 
+class TestNamePluginConfigurationError(Exception):
+    pass
+
+
+class CustomTestFunctionLoaderError(Exception):
+    pass
+
+
 def _get_validator_from_module(file_path: str):
     try:
         spec = importlib.util.spec_from_file_location(
             "customer_test_func_name_module", file_path
         )
         module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        spec.loader.exec_module(module)  # type: ignore
     except Exception as e:
-        raise Exception(f"Could not load python module {file_path}")
+        raise CustomTestFunctionLoaderError(
+            f"Could not load python module {file_path}"
+        ) from None
     else:
         try:
             return getattr(module, TEST_FUNC_NAME_VALIDATOR_METHOD)
-        except AttributeError:
-            raise Exception(
+        except AttributeError as ex:
+            raise CustomTestFunctionLoaderError(
                 f"Could not find function ´{TEST_FUNC_NAME_VALIDATOR_METHOD}´ in module {module.__file__}"
-            )
+            ) from None
 
 
 def _get_validator_from_regex(regex):
@@ -130,7 +140,7 @@ class MyFlake8Plugin(Flake8Argparse):
         elif self.test_func_name_validator_regex:
             return _get_validator_from_regex(self.test_func_name_validator_regex)
         else:
-            raise Exception("No validator defined")
+            raise TestNamePluginConfigurationError("No validator defined")
 
     def run(self):
         if not self.is_in_test_dir(self.filename):
