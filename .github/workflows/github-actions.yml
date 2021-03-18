@@ -1,4 +1,4 @@
-name: MongoengineCI
+name: flake8-test-name-CI
 on:
   # All PR
   pull_request:

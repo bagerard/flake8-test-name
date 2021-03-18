@@ -1,9 +1,9 @@
-Illegal import checker
-===============================
+Test Name function validator (Flake8 plugin)
+============================================
 
-.. image:: https://travis-ci.com/bagerard/flake8-illegal-import.svg?branch=master
-   :alt: Build Status
-   :target: https://travis-ci.com/bagerard/flake8-illegal-import
+![example workflow](https://github.com/bagerard/flake8-test-name/actions/workflows/github-actions/badge.svg)
+
+
 
 .. image:: http://codecov.io/github/bagerard/flake8-illegal-import/coverage.svg?branch=master
    :alt: Coverage Status
