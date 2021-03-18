@@ -106,7 +106,7 @@ class MyFlake8Plugin(Flake8Argparse):
     name = "test-name"
 
     ERRORS = {
-        101: "bad test function name ({func_name})",
+        101: "test function name does not match the convention ({func_name})",
     }
 
     def _generate_error(self, node, code, func_name):

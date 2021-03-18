@@ -189,25 +189,25 @@ class TestMyFlake8Plugin:
             (
                 10,
                 0,
-                "TN101 bad test function name (test_invalid_module_sample)",
+                "TN101 test function name does not match the convention (test_invalid_module_sample)",
                 MyFlake8Plugin,
             ),
             (
                 22,
                 4,
-                "TN101 bad test function name (test_invalid_method_sample)",
+                "TN101 test function name does not match the convention (test_invalid_method_sample)",
                 MyFlake8Plugin,
             ),
             (
                 25,
                 4,
-                "TN101 bad test function name (test_test_funkyconvention_method_is_valid)",
+                "TN101 test function name does not match the convention (test_test_funkyconvention_method_is_valid)",
                 MyFlake8Plugin,
             ),
             (
                 33,
                 4,
-                "TN101 bad test function name (test_invalid_unittest_method_sample)",
+                "TN101 test function name does not match the convention (test_invalid_unittest_method_sample)",
                 MyFlake8Plugin,
             ),
         ]
@@ -242,25 +242,25 @@ class TestMyFlake8Plugin:
             (
                 10,
                 0,
-                "TN101 bad test function name (test_invalid_module_sample)",
+                "TN101 test function name does not match the convention (test_invalid_module_sample)",
                 MyFlake8Plugin,
             ),
             (
                 22,
                 4,
-                "TN101 bad test function name (test_invalid_method_sample)",
+                "TN101 test function name does not match the convention (test_invalid_method_sample)",
                 MyFlake8Plugin,
             ),
             (
                 25,
                 4,
-                "TN101 bad test function name (test_test_funkyconvention_method_is_valid)",
+                "TN101 test function name does not match the convention (test_test_funkyconvention_method_is_valid)",
                 MyFlake8Plugin,
             ),
             (
                 33,
                 4,
-                "TN101 bad test function name (test_invalid_unittest_method_sample)",
+                "TN101 test function name does not match the convention (test_invalid_unittest_method_sample)",
                 MyFlake8Plugin,
             ),
         ]
@@ -280,7 +280,12 @@ class TestMyFlake8Plugin:
         checker.parse_options(None, args, None)
 
         expected = [
-            (1, 0, "TN101 bad test function name (test_not_good)", MyFlake8Plugin)
+            (
+                1,
+                0,
+                "TN101 test function name does not match the convention (test_not_good)",
+                MyFlake8Plugin,
+            )
         ]
 
         res = list(checker.run())
