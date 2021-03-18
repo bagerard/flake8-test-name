@@ -13,7 +13,7 @@ TEST_FUNC_PREFIX = "test_"
 TEST_FUNC_NAME_VALIDATOR_METHOD = "test_function_name_validator"
 
 
-class TestNamePluginConfigurationError(Exception):
+class PluginTestNameConfigurationError(Exception):
     pass
 
 
@@ -140,7 +140,7 @@ class MyFlake8Plugin(Flake8Argparse):
         elif self.test_func_name_validator_regex:
             return _get_validator_from_regex(self.test_func_name_validator_regex)
         else:
-            raise TestNamePluginConfigurationError("No validator defined")
+            raise PluginTestNameConfigurationError("No validator defined")
 
     def run(self):
         if not self.is_in_test_dir(self.filename):

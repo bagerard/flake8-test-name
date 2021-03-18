@@ -14,7 +14,7 @@ from flake8_test_name import (
     _get_validator_from_module,
     _get_validator_from_regex,
     CustomTestFunctionLoaderError,
-    TestNamePluginConfigurationError,
+    PluginTestNameConfigurationError,
 )
 
 curr_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -296,14 +296,14 @@ class TestMyFlake8Plugin:
         tree = get_tree(SAMPLE_FILE_PATH)
         checker = MyFlake8Plugin(tree, SAMPLE_FILE_PATH)
         checker.parse_options(None, SysArgs(None, None), None)
-        with pytest.raises(TestNamePluginConfigurationError):
+        with pytest.raises(PluginTestNameConfigurationError):
             checker.get_test_func_name_validator()
 
     def test_get_test_func_name_validator__no_validator__raises(self):
         tree = get_tree(SAMPLE_FILE_PATH)
         checker = MyFlake8Plugin(tree, SAMPLE_FILE_PATH)
         checker.parse_options(None, SysArgs(None, None), None)
-        with pytest.raises(TestNamePluginConfigurationError):
+        with pytest.raises(PluginTestNameConfigurationError):
             checker.get_test_func_name_validator()
 
     def test_report__should_pass(self):
