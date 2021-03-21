@@ -276,7 +276,7 @@ class TestMyFlake8Plugin:
         )
         # Verify that it would be identified
         # as an invalid test if in tests dir first
-        checker = MyFlake8Plugin(tree, "/tmp/tests/test.py")
+        checker = MyFlake8Plugin(tree, "/tmp/tests/test_garbage.py")
         checker.parse_options(None, args, None)
 
         expected = [

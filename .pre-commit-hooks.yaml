@@ -1,8 +1,0 @@
--   id: test-name-convention
-    name: test-name-convention
-    entry: flake8
-    language: python
-    types: [python]
-    args: ["--select", "TN"]
-    require_serial: true
-    additional_dependencies: []

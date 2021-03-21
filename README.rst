@@ -69,14 +69,14 @@ This plugin is using the following error codes:
 Operation
 ---------
 
-The plugin will go through all files, look for directories named "tests", and validate method
+The plugin will go through all files, look for files starting with "test_" and check any functions or methods
 starting with `test_` against your validator.
 
 
 Changes
 -------
 
-0.1.3 - 2021-03-21
+0.1.4 - 2021-03-21
 ``````````````````
 * minor refactoring and doc improvement
 
