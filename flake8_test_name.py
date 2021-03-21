@@ -3,11 +3,10 @@ import ast
 import os.path
 import importlib.util
 import re
+from typing import Callable, Optional
 
 # metadata
 __version__ = "0.1.4"
-
-from typing import Callable, Optional
 
 CODE_PREFIX = "TN"
 

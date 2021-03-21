@@ -56,55 +56,29 @@ class TestModuleUtils:
         with pytest.raises(CustomTestFunctionLoaderError, match="Could not load"):
             _get_validator_from_module(SAMPLE_PDF_PATH)
 
-    def test__get_validator_from_regex(self):
+    def test__get_validator_from_regex__should_pass(self):
         validator = _get_validator_from_regex("test_garbage.*")
         assert validator("test_garbage_test123") is True
+        assert validator("test_no_match") is False
 
-    def test__resolve_path_absolute(self):
+    def test__resolve_path_absolute__should_pass(self):
         assert resolve_path("/tmp") == "/tmp"
 
-    def test__resolve_path_relative(self):
+    def test__resolve_path_relative__should_pass(self):
         assert resolve_path("./tmp") == os.path.abspath("./tmp")
 
-    def test__resolve_path_expand(self):
+    def test__resolve_path_expand__should_pass(self):
         assert resolve_path("~/tmp") == os.path.expanduser("~/tmp")
-
-    #
-    # @pytest.mark.parametrize(
-    #     "func_name",
-    #     [
-    #         "test_method__when__then",
-    #         "test__protectedmethod__when__then",
-    #         "test___privatemethod__when__then",
-    #         "test_method__when_blabla__then_blabla",
-    #         "test__method__when_blabla__then_blabla",
-    #     ],
-    # )
-    # def test_check_test_func_name__valid_test_name__return_true(self, func_name):
-    #     assert check_test_func_name(func_name) is True
-    #
-    # @pytest.mark.parametrize(
-    #     "func_name",
-    #     [
-    #         "garbage",
-    #         "garbage_method",
-    #         "test_myfunc_shouldpass",
-    #         "test__myfunc__shouldpass_when_this",
-    #         "test___myfunc__shouldpass_when_that__",
-    #     ],
-    # )
-    # def test_check_test_func_name__invalid_test_name__return_false(self, func_name):
-    #     assert check_test_func_name(func_name) is False
 
 
 class TestFlake8Optparse:
-    def test__add_options(self):
+    def test__add_options__should_pass(self):
         flake8_opt_mgr = OptionManager(prog="flake8", version=flake8.__version__,)
         plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
         plugin.add_options(flake8_opt_mgr)
         assert len(flake8_opt_mgr.options) == 2
 
-    def test__parse_options(self):
+    def test__parse_options__should_pass(self):
         flake8_opt_mgr = OptionManager(prog="flake8", version=flake8.__version__)
         plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
         args = SysArgs(
@@ -122,7 +96,7 @@ class TestFlake8Optparse:
 
 
 class TestMyVisitor:
-    def test_visitor_find_all_methods(self):
+    def test_visit__simple_module__find_all_methods(self):
         code_snippet = (
             "import garbage\n\ndef test_method():\n    pass\n\ndef foo():\n    pass"
         )
@@ -137,11 +111,11 @@ class TestMyVisitor:
 
 
 class TestMyFlake8Plugin:
-    def test__format_code(self):
+    def test_format_code__should_pass(self):
         checker = MyFlake8Plugin(None, SAMPLE_FILE_PATH)
         assert checker.format_code(302) == "TN302"
 
-    def test__get_invalid_test_methods__no_match(self):
+    def test_get_invalid_test_methods__simple_case__no_invalid_match(self):
         code_snippet = "import garbage\n\ndef test__im_a_valid_method__when_this__then_that():\n    pass"
         tree = get_tree_from_str(code_snippet)
 
@@ -151,7 +125,7 @@ class TestMyFlake8Plugin:
         invalid_methods = list(MyFlake8Plugin.get_invalid_test_methods(tree, validator))
         assert not invalid_methods
 
-    def test__get_invalid_test_methods__match(self):
+    def test_get_invalid_test_methods__simple_case__finds_invalid_match(self):
         code_snippet = "import garbage\n\ndef test_im_an_valid_method():\n    pass"
         tree = get_tree_from_str(code_snippet)
 
@@ -161,7 +135,7 @@ class TestMyFlake8Plugin:
         invalid_methods = list(MyFlake8Plugin.get_invalid_test_methods(tree, validator))
         assert invalid_methods
 
-    def test_run__using_regex__no_match(self):
+    def test_run__using_regex_on_sample_file__no_invalid_match(self):
         tree = get_tree(SAMPLE_FILE_PATH)
         args = SysArgs(
             test_func_name_validator_regex="test_.*",
@@ -175,7 +149,7 @@ class TestMyFlake8Plugin:
         res = list(checker.run())
         assert res == expected
 
-    def test_run__using_regex__match(self):
+    def test_run__using_regex_on_sample_file__finds_invalid_match(self):
         tree = get_tree(SAMPLE_FILE_PATH)
         args = SysArgs(
             test_func_name_validator_regex="test_funkyconvention.*",
@@ -214,7 +188,7 @@ class TestMyFlake8Plugin:
         res = list(checker.run())
         assert res == expected
 
-    def test_run__using_regex__no_invalid_test(self):
+    def test_run__using_regex__no_invalid_match(self):
         code_snippet = "import garbage\n\ndef foo():\n    pass\n\ndef bar():\n    pass"
         tree = get_tree_from_str(code_snippet)
         args = SysArgs(
@@ -229,7 +203,7 @@ class TestMyFlake8Plugin:
         res = list(checker.run())
         assert res == expected
 
-    def test_run__using_module__match(self):
+    def test_run__using_module__finds_invalid_match(self):
         tree = get_tree(SAMPLE_FILE_PATH)
         args = SysArgs(
             test_func_name_validator_module=SAMPLE_VALIDATOR_MODULE_PATH,
@@ -291,13 +265,15 @@ class TestMyFlake8Plugin:
         res = list(checker.run())
         assert res == expected
 
-        checker = MyFlake8Plugin(tree, "/tmp/regular_dir/test.py")
+        # Simulate a non-test-file with test functions
+        # and confirm that it is simply skipped
+        checker = MyFlake8Plugin(tree, "/tmp/regular_dir/garbage.py")
         checker.parse_options(None, args, None)
 
         res = list(checker.run())
         assert not res
 
-    def test_run__no_validator__raises(self):
+    def test_run__no_validator_provided__raises(self):
         tree = get_tree(SAMPLE_FILE_PATH)
         checker = MyFlake8Plugin(tree, SAMPLE_FILE_PATH)
         checker.parse_options(None, SysArgs(None, None), None)
