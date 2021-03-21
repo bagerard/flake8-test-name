@@ -76,7 +76,7 @@ starting with `test_` against your validator.
 Changes
 -------
 
-0.1.2 - 2021-03-21
+0.1.3 - 2021-03-21
 ``````````````````
 * minor refactoring and doc improvement
 

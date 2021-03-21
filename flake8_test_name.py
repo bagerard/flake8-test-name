@@ -5,7 +5,7 @@ import importlib.util
 import re
 
 # metadata
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 CODE_PREFIX = "TN"
 
 # constants
@@ -100,14 +100,14 @@ class MyFlake8Plugin(Flake8Argparse):
 
     version = __version__
     name = "test-name"
-    code_previx = CODE_PREFIX
+    code_prefix = CODE_PREFIX
 
     ERRORS = {
         101: "test function name does not match the convention ({func_name})",
     }
 
     def format_code(self, code):
-        return f"{self.code_previx}{code}"
+        return f"{self.code_prefix}{code}"
 
     def _generate_error(self, node, code, func_name):
         msg = "{0} {1}".format(self.format_code(code), self.ERRORS[code])
