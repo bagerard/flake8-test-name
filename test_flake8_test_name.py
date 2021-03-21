@@ -8,7 +8,6 @@ from flake8.options.manager import OptionManager
 from flake8_test_name import (
     Flake8Argparse,
     MyFlake8Plugin,
-    format_code,
     resolve_path,
     MyVisitor,
     _get_validator_from_module,
@@ -69,9 +68,6 @@ class TestModuleUtils:
 
     def test__resolve_path_expand(self):
         assert resolve_path("~/tmp") == os.path.expanduser("~/tmp")
-
-    def test__format_code(self):
-        assert format_code(302) == "TN302"
 
     #
     # @pytest.mark.parametrize(
@@ -141,6 +137,10 @@ class TestMyVisitor:
 
 
 class TestMyFlake8Plugin:
+    def test__format_code(self):
+        checker = MyFlake8Plugin(None, SAMPLE_FILE_PATH)
+        assert checker.format_code(302) == "TN302"
+
     def test__get_invalid_test_methods__no_match(self):
         code_snippet = "import garbage\n\ndef test__im_a_valid_method__when_this__then_that():\n    pass"
         tree = get_tree_from_str(code_snippet)

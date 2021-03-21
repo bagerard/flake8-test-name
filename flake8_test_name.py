@@ -5,7 +5,7 @@ import importlib.util
 import re
 
 # metadata
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 CODE_PREFIX = "TN"
 
 # constants
@@ -48,10 +48,6 @@ def _get_validator_from_regex(regex):
         return pattern.fullmatch(func_name) is not None
 
     return regex_validator
-
-
-def format_code(code):
-    return f"{CODE_PREFIX}{code}"
 
 
 def resolve_path(dir_path):
@@ -104,13 +100,17 @@ class MyFlake8Plugin(Flake8Argparse):
 
     version = __version__
     name = "test-name"
+    code_previx = CODE_PREFIX
 
     ERRORS = {
         101: "test function name does not match the convention ({func_name})",
     }
 
+    def format_code(self, code):
+        return f"{self.code_previx}{code}"
+
     def _generate_error(self, node, code, func_name):
-        msg = "{0} {1}".format(format_code(code), self.ERRORS[code])
+        msg = "{0} {1}".format(self.format_code(code), self.ERRORS[code])
         msg = msg.format(func_name=func_name)
         return node.lineno, node.col_offset, msg, type(self)
 
