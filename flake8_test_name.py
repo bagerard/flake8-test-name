@@ -6,7 +6,7 @@ import re
 from typing import Callable, Optional
 
 # metadata
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 CODE_PREFIX = "TN"
 

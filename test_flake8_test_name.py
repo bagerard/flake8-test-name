@@ -73,7 +73,10 @@ class TestModuleUtils:
 
 class TestFlake8Optparse:
     def test__add_options__should_pass(self):
-        flake8_opt_mgr = OptionManager(prog="flake8", version=flake8.__version__,)
+        flake8_opt_mgr = OptionManager(
+            prog="flake8",
+            version=flake8.__version__,
+        )
         plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
         plugin.add_options(flake8_opt_mgr)
         assert len(flake8_opt_mgr.options) == 2

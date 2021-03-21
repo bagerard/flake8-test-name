@@ -69,7 +69,7 @@ This plugin is using the following error codes:
 Operation
 ---------
 
-The plugin will go through all files, look for files starting with "test_" and check any functions or methods
+The plugin will go through all files, look for files starting with `test_` and check any functions or methods
 starting with `test_` against your validator.
 
 
