@@ -23,6 +23,15 @@ will show up when displaying the version of ``flake8``::
   3.6.0 (flake8-test-name: 0.1.2, […]
 
 
+Operation
+---------
+
+The hook assumes that:
+- your test files are matching ``test_.*.py``
+- your test functions are starting with ``test_``
+
+Any function matching these 2 conditions will be validated against your custom validator
+
 Parameters
 ----------
 
@@ -60,17 +69,10 @@ Error codes
 This plugin is using the following error codes:
 
 +----------------------------------------------------------------+
-| Test function name validation                                  |
+| Code  | Error                                                  |
 +-------+--------------------------------------------------------+
 | TN101 | TN101 test function name does not match the convention |
 +-------+--------------------------------------------------------+
-
-
-Operation
----------
-
-The plugin will go through all files, look for files starting with `test_` and check any functions or methods
-starting with `test_` against your validator.
 
 
 Changes
