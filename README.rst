@@ -26,21 +26,18 @@ will show up when displaying the version of ``flake8``::
 Operation
 ---------
 
-The hook assumes that:
-- your test files are matching ``test_.*.py``
-- your test functions are starting with ``test_``
+The hook assumes that your:
+
+- test files are matching :code:`test_.*.py`
+- test functions are starting with :code:`test_`
 
 Any function matching these 2 conditions will be validated against your custom validator
 
 Parameters
 ----------
 
-This module can be configured in 2 ways:
---test-func-name-validator-module={path_to_a_python_file}
-or
---test-func-name-validator-regex={regex_pattern}
-
-E.g usage with the regex::
+This module can be configured in 2 ways.
+First option is a regex using :code:`--test-func-name-validator-regex`::
 
   $ flake8 myproject/tests/sample.py --test-func-name-validator-regex="test_funky_convention_.*" --select=TN101
 
@@ -48,16 +45,13 @@ E.g usage with the regex::
 
 
 
-E.g usage with the module::
-Since regex aren't a good fit for all the use case, you can also provide your own validator
-as a python file with a function named "test_function_name_validator".
-
+Second option is with a python module containing a method named :code:`test_function_name_validator`.
 Assuming you have a funky_validator.py file with the following content::
 
     def test_function_name_validator(func_name: str):
         return func_name.startswith("test_funkyconvention")
 
-You can then configure the plugin with::
+You can then configure it using :code:`--test-func-name-validator-module`::
 
     $ flake8 myproject/tests/sample.py --test-func-name-validator-module=./funky_validator.py --select=TN101
 
@@ -78,7 +72,7 @@ This plugin is using the following error codes:
 Changes
 -------
 
-0.1.4 - 2021-03-21
+0.1.5 - 2021-03-21
 ``````````````````
 * minor refactoring and doc improvement
 
