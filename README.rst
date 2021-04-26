@@ -9,7 +9,7 @@ Test Name function validator (Flake8 plugin)
    :alt: Coverage Status
    :target: https://coveralls.io/github/bagerard/flake8-test-name
 
-An extension for `Flake8 <https://pypi.python.org/pypi/flake8>`_ to make sure
+An extension for `Flake8 <https://github.com/PyCQA/flake8>`_ to make sure
 that test function name follows a given convention
 
 
