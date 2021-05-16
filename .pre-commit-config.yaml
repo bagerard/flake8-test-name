@@ -4,7 +4,7 @@
 fail_fast: false
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
     -   id: check-ast
     -   id: check-merge-conflict
@@ -15,7 +15,7 @@ repos:
         types: [python]
 
 -   repo: https://gitlab.com/pycqa/flake8
-    rev: master
+    rev: 3.9.2
     hooks:
     -   id: flake8
         name: flake8-blocking
@@ -28,7 +28,7 @@ repos:
     -   id: mypy
         args: [--ignore-missing-imports]
 -   repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.5b1
     hooks:
     -   id: black
 - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
