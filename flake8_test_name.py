@@ -34,7 +34,7 @@ def _get_validator_from_module(file_path: str) -> T_TestNameValidatorFunc:
         spec = importlib.util.spec_from_file_location(
             "customer_test_func_name_module", file_path
         )
-        module = importlib.util.module_from_spec(spec)
+        module = importlib.util.module_from_spec(spec)  # type: ignore
         spec.loader.exec_module(module)  # type: ignore
     except Exception as e:
         raise CustomTestFunctionLoaderError(
