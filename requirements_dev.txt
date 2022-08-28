@@ -3,4 +3,4 @@ pytest
 astpretty
 mock
 pytest-cov
-pre-commit
+pre-commit>=2.20.0
