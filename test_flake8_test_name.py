@@ -72,23 +72,32 @@ class TestModuleUtils:
 
 
 class TestFlake8Optparse:
-    def test__add_options__should_pass(self):
-        flake8_opt_mgr = OptionManager(
-            prog="flake8",
-            version=flake8.__version__,
-        )
-        plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
-        plugin.add_options(flake8_opt_mgr)
-        assert len(flake8_opt_mgr.options) == 2
+    @pytest.fixture()
+    def option_mgr(self):
+        if flake8.__version__ < "5":
+            return OptionManager(
+                prog="flake8",
+                version=flake8.__version__,
+            )
+        else:
+            return OptionManager(
+                version=flake8.__version__,
+                plugin_versions="1.1.1",
+                parents=[],
+            )
 
-    def test__parse_options__should_pass(self):
-        flake8_opt_mgr = OptionManager(prog="flake8", version=flake8.__version__)
+    def test__add_options__should_pass(self, option_mgr):
+        plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
+        plugin.add_options(option_mgr)
+        assert len(option_mgr.options) == 2
+
+    def test__parse_options__should_pass(self, option_mgr):
         plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
         args = SysArgs(
             test_func_name_validator_module=SAMPLE_VALIDATOR_MODULE_PATH,
             test_func_name_validator_regex="test_.*",
         )
-        plugin.parse_options(flake8_opt_mgr, args, extra_args=None)
+        plugin.parse_options(option_mgr, args, extra_args=None)
         assert (
             plugin.test_func_name_validator_regex == args.test_func_name_validator_regex
         )
