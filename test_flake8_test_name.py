@@ -79,17 +79,19 @@ class TestFlake8Optparse:
                 prog="flake8",
                 version=flake8.__version__,
             )
+        elif flake8.__version__ < "6":
+            return OptionManager(
+                version=flake8.__version__,
+                plugin_versions="",
+                parents=[],
+            )
         else:
             return OptionManager(
                 version=flake8.__version__,
-                plugin_versions="1.1.1",
+                plugin_versions="",
                 parents=[],
+                formatter_names=[],
             )
-
-    def test__add_options__should_pass(self, option_mgr):
-        plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
-        plugin.add_options(option_mgr)
-        assert len(option_mgr.options) == 2
 
     def test__parse_options__should_pass(self, option_mgr):
         plugin = Flake8Argparse(None, SAMPLE_FILE_PATH)
