@@ -80,6 +80,10 @@ This plugin is using the following error codes:
 Changes
 -------
 
+0.1.6 - 2023-10-03
+``````````````````
+* fix in options parser for flake8 > 6.0
+
 0.1.5 - 2021-03-21
 ``````````````````
 * minor refactoring and doc improvement
