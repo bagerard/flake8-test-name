@@ -75,14 +75,14 @@ class Flake8Argparse(object):
     def add_options(cls, option_manager):
         option_manager.add_option(
             "--test-func-name-validator-module",
-            type="str",
+            type=str,
             default=None,
             parse_from_config=True,
             help=f"Path to a python file containing a validator function ´{TEST_FUNC_NAME_VALIDATOR_METHOD}´",
         )
         option_manager.add_option(
             "--test-func-name-validator-regex",
-            type="str",
+            type=str,
             default=None,
             parse_from_config=True,
             help="Regex to be used as validator",
