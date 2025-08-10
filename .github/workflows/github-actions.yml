@@ -20,7 +20,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
-        python-version: 3.9
+        python-version: 3.13
     - run: bash .github/workflows/install_ci_python_dep.sh
     - run: pre-commit run -a
 
@@ -60,7 +60,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
-        python-version: 3.9
+        python-version: 3.13
     - name: build wheel
       run: |
         pip install wheel
